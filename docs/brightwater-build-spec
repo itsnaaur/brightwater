@@ -1,0 +1,187 @@
+# Brightwater Family Law — Build Specification
+
+This document is the single source of truth for building this site. Follow it precisely. Do not introduce design decisions (colors, fonts, layout patterns, component styles) that aren't specified here. Where something is ambiguous, default to restraint and simplicity over decoration.
+
+---
+
+## 1. Project overview
+
+A single, long-form scrolling page for a fictional boutique family law firm in Brisbane (also serving the Gold Coast). The visitor is almost always a stressed, anxious, first-time legal client researching late at night. The entire page exists to do three things, in priority order:
+
+1. Build instant trust (calm, human, premium-but-approachable — never cold, corporate, or aggressive)
+2. Communicate expertise within seconds
+3. Drive one specific action: **booking a free 20-minute consultation**
+
+This is a single-page site. No multi-page routing. No nav links to separate pages — nav links scroll to in-page sections.
+
+---
+
+## 2. Tech stack
+
+- **React 18 + TypeScript**
+- **Vite** as the build tool
+- **Tailwind CSS** for styling — all colors, fonts, and spacing must be defined as Tailwind theme tokens (see Section 3), not arbitrary inline hex values scattered through components
+- No UI component library (no shadcn, no MUI, no Chakra). Build components from scratch using Tailwind. This site needs a custom, designed feel — not a library's default look.
+- No backend/database needed. The booking section will embed a Calendly inline widget (script tag + div, provided separately) — no custom booking logic needs to be written.
+- Deploy target: static build, deployable to Vercel or Netlify.
+
+---
+
+## 3. Design system (do not deviate from this)
+
+### Colors — add these to `tailwind.config` as custom theme colors
+
+```
+cream:        #F6F2EA   (primary background)
+sand:         #EAE4D2   (secondary/alternating section background)
+sage:         #4F6B58   (primary accent — CTAs, key icons, links, headline highlights)
+sage-dark:    #33433A   (darker accent — stronger section backgrounds, hover states)
+charcoal:     #22211C   (primary text color — NEVER use pure black #000000)
+charcoal-soft:#5B5848   (secondary/muted text color — NEVER use generic gray #888 or #999)
+```
+
+Rules:
+- Background is never pure white. Use `cream` as the default page background.
+- Alternate `cream` and `sand` (or `sage-dark`) between sections to create rhythm without introducing new colors.
+- `sage` is the ONE dominant accent color. It is used for: primary CTA buttons, key icons, link hover states, occasional headline emphasis. Do not introduce a second accent color (no blue, no gold, no red) anywhere on the site.
+- Text uses `charcoal` (primary) and `charcoal-soft` (secondary) only. Never pure black, never default Tailwind gray-500/gray-600/etc.
+- No gradients anywhere. No drop shadows except very subtle ones on cards (max `shadow-sm` equivalent, low opacity, warm-tinted not gray-tinted if customized).
+
+### Typography
+
+- **Headings**: Lora, weight 700 (bold). Import from Google Fonts. Use for all h1/h2/h3 and major section headlines.
+- **Body & UI text**: Public Sans, weights 400 and 500 only. Use for paragraphs, nav, buttons, labels, form fields.
+- Do NOT use Inter anywhere — it is explicitly excluded from this project.
+- Hero headline (h1) should be large and confident: minimum `text-4xl` on mobile, scaling up to `text-5xl` or `text-6xl` on desktop. The headline must feel commanding, not timid — err toward bigger/bolder rather than safe/small.
+- Section headlines (h2) should be clearly hierarchical below the hero but still substantial — `text-3xl`/`text-4xl` range.
+- Body text: `text-base` to `text-lg`, line-height relaxed (`leading-relaxed` or `leading-7`) for readability, especially on mobile.
+- Sentence case throughout. No ALL CAPS except small tracked-out labels (e.g. "FAMILY LAW" under the logo, or small eyebrow labels above section headlines) — and even those should be used sparingly.
+
+### Logo / header lockup
+
+- Icon: a provided abstract wave/arc SVG or PNG asset (will be supplied separately) representing calm water/horizon. Single color, sage green.
+- Wordmark: "Brightwater" rendered as LIVE TEXT in Lora 700, not as part of an image. "Family Law" or "FAMILY LAW" as a smaller tracked-out label in Public Sans underneath or beside it.
+- Header layout: icon + wordmark on the left, nav links + primary CTA button on the right (desktop). On mobile: icon + wordmark on the left, hamburger menu icon on the right — collapse nav links into the mobile menu.
+- Header should be sticky on scroll, with a subtle background (cream, possibly with a soft bottom border) so it stays usable as the visitor scrolls the long page.
+
+### Buttons
+
+- Primary CTA button: `sage` background, cream/white text, generous horizontal padding (e.g. `px-6 py-3`), rounded corners (`rounded-lg`, not fully pill-shaped, not sharp corners), medium font weight. Hover state: slightly darker sage (`sage-dark`) or a subtle scale/opacity transition — keep it understated, not bouncy or flashy.
+- There should be only ONE primary CTA style used consistently everywhere: "Book your free consultation" (or equivalent short, consistent wording). Do not introduce multiple different-looking buttons for the same action.
+- Secondary actions (if any — e.g. "Learn more" anchor links) should look visually subordinate: outline style, text link with arrow, or ghost button — never competing visually with the primary CTA.
+
+### Spacing & layout
+
+- Generous whitespace between sections — this site should never feel cramped or dense. Minimum vertical section padding: `py-16` on mobile, `py-24` or more on desktop.
+- Max content width: constrain text-heavy content to a readable measure (e.g. `max-w-3xl` for paragraphs, `max-w-6xl` or `max-w-7xl` for full section containers/grids).
+- Mobile-first: design and test every section at mobile width first (375px–428px range), then scale up. Most of Brightwater's real-world traffic is mobile — this is a hard requirement, not a nice-to-have.
+- No dense multi-column layouts on mobile — stack everything vertically, single column, generous tap targets (min 44px height for interactive elements).
+
+### Imagery
+
+- No stock photos of gavels, scales of justice, courtrooms, or handshake clichés.
+- Prefer warm, human, candid-feeling photography (people in calm settings, soft natural light) OR tasteful abstract/illustrative elements (e.g. soft wave/line motifs echoing the logo) over generic corporate stock photography.
+- If real photography isn't available/sourced yet, use warm-toned placeholder blocks (sand or sage-tinted) with a label, rather than defaulting to harsh gray placeholder boxes.
+
+### Icons
+
+- If icons are needed (e.g. for the practice area cards or process steps), use a single consistent icon set (e.g. Lucide React or Tabler icons), outline style only, sage-colored, never filled/solid style icons, never mixed icon sets.
+
+---
+
+## 4. Page structure (build in this exact order)
+
+This is a single page, top to bottom. Each section is described with its purpose, content, and key design notes.
+
+### 1. Header (sticky)
+Logo lockup left, nav links (e.g. "Practice areas", "About", "FAQ") + primary CTA button right. Mobile: hamburger menu.
+
+### 2. Hero section
+- Large, confident Lora headline speaking directly to the visitor's emotional state (calm, reassuring, human — not a firm-name-first headline). Example direction: "You don't have to figure this out alone."
+- Short supporting subhead in Public Sans (1–2 sentences) introducing what the firm does and the free consultation offer.
+- Primary CTA button visible immediately, above the fold on mobile.
+- Background: cream, possibly with a subtle abstract wave motif echoing the logo (low opacity, decorative only, must not reduce text contrast/readability).
+
+### 3. Practice areas
+- Section eyebrow/label + h2 headline (e.g. "How we can help").
+- Four cards in a grid (2x2 on tablet/desktop, single column stacked on mobile): Divorce & Separation, Property Settlements, Parenting & Custody Arrangements, Mediation.
+- Each card: short icon, bold short title, 1–2 sentence plain-English description (no legal jargon).
+- Cards use `sand` or white-on-cream subtle card treatment — consistent card style, consistent height/alignment.
+
+### 4. Meet the team
+- h2 headline (e.g. "The people you'll actually be working with").
+- Principal solicitor (18 years' experience) given visual priority — larger photo/card or featured first.
+- Remaining three lawyers in a consistent card grid (photo placeholder, name, role/title, one short warm sentence — not a dense legal bio).
+- This section should feel human and approachable — avoid stiff corporate headshot styling in copy tone even if real photos aren't available yet.
+
+### 5. How it works
+- h2 headline (e.g. "What happens when you reach out").
+- Simple 3-step horizontal process (stacked vertically on mobile): e.g. (1) Book your free 20-minute consult, (2) We listen and walk you through your options, (3) You decide your next step, no pressure.
+- Keep this visually light — numbered steps with short labels, not paragraphs of text. This section exists to reduce fear of the unknown, not to explain legal process in detail.
+
+### 6. Why Brightwater / testimonials
+- 2–3 short, believable placeholder testimonials (fictional, clearly written in a warm, human voice — avoid generic "Great service!" filler).
+- Optionally 2–3 short trust/differentiator statements if testimonials alone feel thin — but avoid repeating claims already made in the Team section.
+
+### 7. FAQ
+- Accordion-style FAQ (expand/collapse), addressing real hesitations:
+  - Is the consultation really free and no-obligation?
+  - What happens during the 20-minute call?
+  - How do I know if Brightwater is the right fit for my situation?
+  - (Add 1–2 more relevant to family law if useful — cost concerns, confidentiality, timeline expectations)
+- Keep answers short, warm, plain-English — no legal disclaimers or dense paragraphs.
+
+### 8. Final CTA section
+- A calm, direct, full-width closing section repeating the primary CTA.
+- Slightly different visual treatment from the hero (e.g. `sage-dark` background with cream text) to mark it as the page's closing moment.
+- Include a low-friction alternative (e.g. a phone number) for anyone who doesn't want to use a form/widget.
+
+### 9. Booking section (if not merged into Final CTA)
+- This is where the Calendly inline embed widget will be placed (embed code provided separately — do not build custom booking/calendar logic).
+- Wrap the embed in a clean container consistent with the site's card/section styling so it doesn't look like a foreign element dropped onto the page.
+
+### 10. Footer
+- Logo (small), brief tagline.
+- Contact details (phone, email — placeholder/fictional is fine).
+- Explicit mention of both service areas: Brisbane and Gold Coast.
+- Simple bottom line: copyright, possibly a fictional law-society-style credential line (clearly fictional, believable, not misleading in a real-world way).
+
+---
+
+## 5. Content & copy guidelines
+
+- Write all copy in plain English. Avoid legal jargon entirely — the visitor is not a lawyer.
+- Tone: warm, calm, human, confident. Avoid corporate stiffness ("Our firm leverages decades of experience...") and avoid over-familiar casualness (no slang, no exclamation-point-heavy copy).
+- Every section should logically earn its place in the trust-building arc: emotional connection → relevance/expertise → process clarity → human credibility → social proof → objection handling → action. Do not reorder sections without reconsidering this arc.
+- The primary CTA wording should be IDENTICAL everywhere it appears (e.g. always "Book your free consultation" — not swapped between "Get started," "Contact us," "Schedule now," etc.). Consistency reduces cognitive friction.
+
+---
+
+## 6. What NOT to do (explicit anti-patterns to avoid)
+
+- Do NOT use a purple-to-blue gradient anywhere, or any gradient at all.
+- Do NOT default to Inter font.
+- Do NOT use navy + gold, or black + gold — this is the generic law firm cliché we are deliberately avoiding.
+- Do NOT use stock imagery of gavels, scales of justice, courtroom benches, or handshake-over-desk clichés.
+- Do NOT introduce a second/third accent color beyond the sage system defined above.
+- Do NOT build a multi-page site or add routing — this is a single scrolling page.
+- Do NOT build custom calendar/booking backend logic — the Calendly embed handles this.
+- Do NOT use generic shadcn/MUI default component styling without restyling it to match this design system — components must look custom-designed, not library-default.
+- Do NOT use ALL CAPS headlines or aggressive, urgency-driven copy ("ACT NOW," "LIMITED TIME") — this directly contradicts the "not ambulance-chaser" brand requirement.
+
+---
+
+## 7. Responsive & accessibility requirements
+
+- Fully responsive, mobile-first. Test at 375px, 768px, and 1280px+ widths minimum.
+- All interactive elements (buttons, accordion triggers, nav links) must have visible focus states and sufficient tap target size (min 44x44px) for mobile.
+- Color contrast: ensure `charcoal` text on `cream`/`sand` backgrounds, and `cream` text on `sage`/`sage-dark` backgrounds, meet at least WCAG AA contrast standards.
+- Semantic HTML: proper heading hierarchy (one h1, logical h2/h3 nesting), `<nav>`, `<section>`, `<footer>` landmarks, alt text on all images/icons that convey meaning.
+
+---
+
+## 8. Deliverable
+
+- A working, deployed build (Vercel/Netlify) or a local dev server that runs cleanly with `npm install && npm run dev`.
+- Clean component structure — one component per section (e.g. `Hero.tsx`, `PracticeAreas.tsx`, `Team.tsx`, `HowItWorks.tsx`, `Testimonials.tsx`, `FAQ.tsx`, `FinalCTA.tsx`, `Footer.tsx`, `Header.tsx`) assembled in `App.tsx` in the order defined in Section 4.
+- No unused boilerplate from the Vite starter template (default Vite logos, sample counter component, etc.) left in the final build.
